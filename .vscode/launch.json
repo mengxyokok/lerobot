@@ -1,0 +1,57 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "train_act_aloha_transfer_cube_human",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "lerobot/scripts/train.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--policy.type", "act",
+        "--dataset.repo_id", "lerobot/aloha_sim_transfer_cube_human",
+        "--output_dir", "outputs/train/act_aloha_transfer_debug",
+        "--wandb.enable","true",
+        // "--env.type", "aloha",
+        // "--env.task", "AlohaTransferCube-v0",
+        
+      ]
+    },
+    {
+      "name": "train_act_franka_libero",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "lerobot/scripts/train.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--policy.type", "act",
+        "--dataset.repo_id", "isaacsim_libero_object_joint_2025_06_09_n1",
+        "--output_dir", "outputs/train/act_franka_libero_debug",
+        "--wandb.enable","true",
+        // "--env.type", "aloha",
+        // "--env.task", "AlohaTransferCube-v0",
+        
+      ]
+    },
+    {
+      "name": "eval_act_franka_libero",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "lerobot/scripts/eval.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--policy.path", "outputs/train/act_franka_libero_0612/checkpoints/060000/pretrained_model",
+      ]
+    },
+    {
+      "name": "Python Debugger: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    }
+  ]
+}
