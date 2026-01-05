@@ -1,6 +1,6 @@
 {
     "output_dir": null,
-    "job_name": "franka_sim_sac",
+    "job_name": "franka_pick_cube_sim_sac_baseline",
     "resume": false,
     "seed": 1000,
     "num_workers": 4,
@@ -9,13 +9,13 @@
     "eval_freq": 20000,
     "log_freq": 1,
     "save_checkpoint": true,
-    "save_freq": 20000,
+    "save_freq": 1000,
     "use_policy_training_preset": true,
     "optimizer": null,
     "scheduler": null,
     "wandb": {
         "enable": true,
-        "project": "franka_sim",
+        "project": "hilserl_franka_sim",
         "disable_artifact": true
     },
     "dataset": {
@@ -36,9 +36,9 @@
                 "gripper_penalty": -0.02
             },
             "reset": {
-                "fixed_reset_joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                "reset_time_s": 10.0,
-                "control_time_s": 60.0,
+                "fixed_reset_joint_positions": [0.0, 0.195, 0.0, -2.43, 0.0, 2.62, 0.785],
+                "reset_time_s": 1.0,
+                "control_time_s": 10.0,
                 "terminate_on_success": true
             }
         },
@@ -122,7 +122,7 @@
         "freeze_vision_encoder": true,
         "image_encoder_hidden_dim": 32,
         "shared_encoder": true,
-        "online_steps": 1000000,
+        "online_steps": 10000,
         "online_buffer_capacity": 100000,
         "offline_buffer_capacity": 100000,
         "online_step_before_learning": 100,
