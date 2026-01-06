@@ -1,6 +1,6 @@
 {
     "output_dir": null,
-    "job_name": "franka_pick_cube_sim_sac_baseline",
+    "job_name": "franka_pick_cube_sim_sac_hil",
     "resume": false,
     "seed": 1000,
     "num_workers": 4,
