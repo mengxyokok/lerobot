@@ -29,5 +29,4 @@ dummy_obs = {
 with torch.no_grad():
     action = policy.select_action(dummy_obs)
 
-print(f"输入观察: {[(k, v.shape) for k, v in dummy_obs.items()]}")
 print(f"输出动作: {action}, 形状: {action.shape}")
