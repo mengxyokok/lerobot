@@ -8,6 +8,8 @@ from lerobot.envs.utils import preprocess_observation
 import gymnasium as gym
 import gym_hil
 
+from lerobot.rl.gym_manipulator import make_processors, make_robot_env
+
 # 配置checkpoint路径
 checkpoint_path = "outputs/train/2026-01-05/16-33-40_franka_pick_cube_sim_sac_baseline/checkpoints/010000/pretrained_model"
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -23,38 +25,28 @@ policy = make_policy(cfg=cfg.policy, env_cfg=cfg.env)
 policy.eval()
 policy.to(device)
 
-# 创建preprocessor和postprocessor
-preprocessor, postprocessor = make_pre_post_processors(
-    policy_cfg=cfg.policy,
-    pretrained_path=checkpoint_path,
-    dataset_stats=cfg.policy.dataset_stats,
-)
 
-# 创建环境
-env = gym.make("gym_hil/PandaPickCubeKeyboard-v0", render_mode="human")
+# 创建环境、环境处理器和动作处理器
+env, teleop_device = make_robot_env(cfg.env)
+env_processor, action_processor = make_processors(env, teleop_device, cfg.env, device)
+env_processor.reset()
+action_processor.reset()
 
-# 重置环境
 obs, _ = env.reset()
 
 while True:
     # 将环境观察转换为LeRobot格式
     # 环境返回: {"pixels": {"front": ..., "wrist": ...}, "agent_pos": ...}
     # 需要转换为: {"observation.images.front": ..., "observation.images.wrist": ..., "observation.state": ...}
-    lerobot_obs = preprocess_observation(obs)
-    
-    # 应用preprocessor（添加batch维度、移动到设备、归一化等）
-    processed_obs = preprocessor(lerobot_obs)
-    
+
+    processed_obs=env_processor(obs)
     with torch.no_grad():
         # 推理
         action = policy.select_action(processed_obs)
-        # 应用postprocessor（反归一化、移动到CPU）
-        action = postprocessor(action)
+
+    processed_action=action_processor(action)
     
-    # 将action转换为numpy数组（环境期望numpy格式）
-    action_np = action.squeeze(0).cpu().numpy()  # 移除batch维度并转换为numpy
-    
-    obs, reward, terminated, truncated, info = env.step(action_np)
+    obs, reward, terminated, truncated, info = env.step(processed_action)
     if terminated or truncated:
         obs, _ = env.reset()
 
