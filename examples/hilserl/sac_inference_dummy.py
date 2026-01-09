@@ -3,7 +3,7 @@
 
 import torch
 from lerobot.configs.train import TrainRLServerPipelineConfig
-from lerobot.policies.factory import make_policy, make_pre_post_processors
+from lerobot.policies.factory import make_policy
 
 # 配置checkpoint路径
 checkpoint_path = "outputs/train/2026-01-05/16-33-40_franka_pick_cube_sim_sac_baseline/checkpoints/010000/pretrained_model"
