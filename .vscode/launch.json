@@ -1,0 +1,40 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "LeRobot Actor",
+            "request": "launch",
+            "python": "${command:python.interpreterPath}",
+            "type": "debugpy",
+            "module": "lerobot.rl.actor",
+            "args": [
+                "--config_path",
+                "/home/mxy/robot/lerobot/configs/sim_franka_train.json"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "LeRobot Learner",
+            "request": "launch",
+            "python": "${command:python.interpreterPath}",
+            "type": "debugpy",
+            "module": "lerobot.rl.learner",
+            "args": [
+                "--config_path",
+                "/home/mxy/robot/lerobot/configs/sim_franka_train.json"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
