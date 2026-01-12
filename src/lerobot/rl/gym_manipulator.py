@@ -320,6 +320,7 @@ def make_robot_env(cfg: HILSerlRobotEnvConfig) -> tuple[gym.Env, Any]:
             f"gym_hil/{cfg.task}",
             image_obs=True,
             render_mode="human",
+            random_block_position=False,
             use_gripper=use_gripper,
             gripper_penalty=gripper_penalty,
         )
