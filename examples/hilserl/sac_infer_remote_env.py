@@ -19,17 +19,16 @@ import numpy as np
 SERVER_URL = "http://localhost:5000"
 
 
-def request_predict(obs_dict, info_dict={}):
+def request_predict(obs_dict):
     """发送预测请求到服务器"""
     response = requests.post(
         f"{SERVER_URL}/predict",
-        json={"observation": obs_dict, "info": info_dict or {}},
+        json={"observation": obs_dict},
         timeout=100
     )
     if response.status_code == 200:
         result = response.json()
-        if result.get("success"):
-            return np.array(result.get("action"), dtype=np.float32)
+        return result.get("action")
     return None
 
 
