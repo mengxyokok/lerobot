@@ -24,7 +24,7 @@ def test_predict():
     response = requests.post(
         f"{SERVER_URL}/predict",
         json={"observation": obs, "info": {}},
-        timeout=10
+        timeout=100
     )
     
     if response.status_code == 200:

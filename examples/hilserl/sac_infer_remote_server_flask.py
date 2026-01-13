@@ -67,7 +67,7 @@ def predict():
         for key, value in obs_dict.items():
             obs[key] = np.array(value, dtype=np.float32)
         
-        # 转换为torch tensor并预处理（参考 prepare_observation_for_inference）
+        # list转换为tensor并预处理
         for name in obs:
             obs[name] = torch.from_numpy(obs[name])
             if "image" in name:
@@ -79,6 +79,13 @@ def predict():
         # 推理
         with torch.no_grad():
             action = policy.select_action(obs)
+        
+        # tensor转换为numpy再转换为list并移除batch维度
+        if isinstance(action, torch.Tensor):
+            action_np = action.cpu().numpy()
+            if action_np.ndim > 1:
+                action_np = action_np.squeeze(0)  # 移除batch维度
+            action = action_np.tolist()
         
         return jsonify({
             'success': True,
