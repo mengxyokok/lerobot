@@ -61,8 +61,21 @@ def predict():
     try:
         # 获取JSON数据
         data = request.json
-        obs, info = data['observation'], data['info']
- 
+        obs_dict, info_dict = data['observation'], data['info']
+         # 转换为numpy数组
+        obs = {}
+        for key, value in obs_dict.items():
+            obs[key] = np.array(value, dtype=np.float32)
+        
+        # 转换为torch tensor并预处理（参考 prepare_observation_for_inference）
+        for name in obs:
+            obs[name] = torch.from_numpy(obs[name])
+            if "image" in name:
+                obs[name] = obs[name].type(torch.float32) / 255.0  # 归一化到[0,1]
+                obs[name] = obs[name].permute(2, 0, 1).contiguous()  # (H,W,C) -> (C,H,W)
+            obs[name] = obs[name].unsqueeze(0)  # 添加batch维度
+            obs[name] = obs[name].to(device)
+        
         # 推理
         with torch.no_grad():
             action = policy.select_action(obs)
