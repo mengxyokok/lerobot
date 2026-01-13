@@ -19,6 +19,20 @@ import numpy as np
 SERVER_URL = "http://localhost:5000"
 
 
+def convert_to_json_serializable(obj):
+    """递归地将对象转换为JSON可序列化的格式"""
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {key: convert_to_json_serializable(value) for key, value in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [convert_to_json_serializable(item) for item in obj]
+    elif isinstance(obj, (np.integer, np.floating)):
+        return obj.item()
+    else:
+        return obj
+
+
 def request_predict(obs_dict):
     """发送预测请求到服务器"""
     response = requests.post(
@@ -45,13 +59,13 @@ obs, info = env.reset()
 
 while True:
      # 处理观察: numpy转list
-    obs_dict = obs.tolist()
+    obs_json = convert_to_json_serializable(obs)
     
     # 请求推理
-    action_dict = request_predict(obs_dict)
+    action_json = request_predict(obs_json)
 
     # 处理action：list转numpy
-    action = np.array(action_dict, dtype=np.float32)
+    action = np.array(action_json, dtype=np.float32)
 
     # env step
     obs, reward, terminated, truncated, info = env.step(action)

@@ -63,10 +63,11 @@ def predict():
     try:
         # 获取JSON数据
         data = request.json
-        obs_dict, info_dict = data["observation"], data["info"]
-        # 转换为numpy数组
+        obs_json = data["observation"]
+
+        # 转换为numpy
         obs = {}
-        for key, value in obs_dict.items():
+        for key, value in obs_json.items():
             obs[key] = np.array(value, dtype=np.float32)
 
         # list转换为tensor
@@ -78,7 +79,7 @@ def predict():
             obs[name] = obs[name].unsqueeze(0)  # 添加batch维度
             obs[name] = obs[name].to(device)
 
-        # 处理观察
+        # 处理观察 preprocess
         transition = create_transition(observation=obs, info={})
         transition = env_processor(transition)
         processed_obs = transition[TransitionKey.OBSERVATION]
@@ -87,7 +88,7 @@ def predict():
         with torch.no_grad():
             action = policy.select_action(processed_obs)
 
-        # 创建动作transition并处理
+        # 处理动作 postprocess
         action_transition = create_transition(action=action)
         processed_action_transition = action_processor(action_transition)
         processed_action = processed_action_transition[TransitionKey.ACTION]
