@@ -65,19 +65,15 @@ def predict():
         data = request.json
         obs_json = data["observation"]
 
-        # 转换为numpy
+        # 转换为numpy数组（根据键名判断数据类型）
         obs = {}
         for key, value in obs_json.items():
-            obs[key] = np.array(value, dtype=np.float32)
-
-        # list转换为tensor
-        for name in obs:
-            obs[name] = torch.from_numpy(obs[name])
-            # if "image" in name:
-            #     obs[name] = obs[name].type(torch.float32) / 255.0  # 归一化到[0,1]
-            #     obs[name] = obs[name].permute(2, 0, 1).contiguous()  # (H,W,C) -> (C,H,W)
-            obs[name] = obs[name].unsqueeze(0)  # 添加batch维度
-            obs[name] = obs[name].to(device)
+            if "image" in key.lower():
+                # 图像数据：使用uint8类型（值在0-255范围）
+                obs[key] = np.array(value, dtype=np.uint8)
+            else:
+                # 其他数据（如state）：使用float32类型
+                obs[key] = np.array(value, dtype=np.float32)
 
         # 处理观察 preprocess
         transition = create_transition(observation=obs, info={})
