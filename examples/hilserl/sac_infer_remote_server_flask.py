@@ -65,15 +65,26 @@ def predict():
         data = request.json
         obs_json = data["observation"]
 
-        # 转换为numpy数组（根据键名判断数据类型）
+        # 转换为numpy数组并处理嵌套结构
+        # 数据结构: {"pixels": {"front": [...], "wrist": [...]}, "agent_pos": [...]}
         obs = {}
-        for key, value in obs_json.items():
-            if "image" in key.lower():
-                # 图像数据：使用uint8类型（值在0-255范围）
-                obs[key] = np.array(value, dtype=np.uint8)
-            else:
-                # 其他数据（如state）：使用float32类型
-                obs[key] = np.array(value, dtype=np.float32)
+        
+        # 处理list转numpy
+        if "pixels" in obs_json:
+            pixels = obs_json["pixels"]
+            obs["pixels"] = {}
+            if isinstance(pixels, dict):
+                for key in ["front", "wrist"]:
+                    if key in pixels:
+                        # 三维列表 -> 三维numpy数组 (H, W, C)
+                        arr = np.array(pixels[key], dtype=np.uint8)
+                        obs["pixels"][key] = arr
+        
+        # 处理agent_pos（状态数据）
+        if "agent_pos" in obs_json:
+            # 一维列表 -> 一维numpy数组
+            obs["agent_pos"] = np.array(obs_json["agent_pos"], dtype=np.float32)
+        
 
         # 处理观察 preprocess
         transition = create_transition(observation=obs, info={})
@@ -95,6 +106,9 @@ def predict():
         return jsonify({"action": action})
 
     except Exception as e:
+        # 命令行打印错误
+        print(f"Error: {e}")
+        # 返回错误信息
         return jsonify({"error": str(e)}), 500
 
 
@@ -122,16 +136,16 @@ policy.to(device)
 print(f"模型已加载到设备: {device}")
 
 env_steps = [
-    Torch2NumpyActionProcessorStep(),
+    Numpy2TorchActionProcessorStep(),
+    VanillaObservationProcessorStep(),
+    AddBatchDimensionProcessorStep(),
+    DeviceProcessorStep(device=device),
 ]
 env_processor = DataProcessorPipeline(
     steps=env_steps, to_transition=identity_transition, to_output=identity_transition
 )
 action_steps = [
-    Numpy2TorchActionProcessorStep(),
-    VanillaObservationProcessorStep(),
-    AddBatchDimensionProcessorStep(),
-    DeviceProcessorStep(device=device),
+    Torch2NumpyActionProcessorStep(),
 ]
 action_processor = DataProcessorPipeline(
     steps=action_steps, to_transition=identity_transition, to_output=identity_transition
