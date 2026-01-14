@@ -15,6 +15,7 @@ from lerobot.processor.converters import create_transition
 from lerobot.processor.core import TransitionKey
 from lerobot.configs.train import TrainRLServerPipelineConfig
 from lerobot.policies.factory import make_policy
+from lerobot.policies.sac.configuration_sac import SACConfig  # 导入以注册策略类型
 from lerobot.processor import (
     AddBatchDimensionProcessorStep,
     DataProcessorPipeline,
@@ -56,7 +57,7 @@ action_processor = DataProcessorPipeline(
 env_processor.reset()
 action_processor.reset()
 
-async def handle_method(websocket, path):
+async def handle_method(websocket, path=None):
     """处理WebSocket客户端连接"""
     print(f"客户端连接: {websocket.remote_address}")
     try:
@@ -93,16 +94,31 @@ async def handle_method(websocket, path):
                 processed_action_transition = action_processor(action_transition)
                 processed_action = processed_action_transition[TransitionKey.ACTION]
 
-                # 转换为JSON
-                response = {"action": processed_action.tolist()}
+                # 转换为JSON（确保是numpy数组）
+                if isinstance(processed_action, np.ndarray):
+                    action_list = processed_action.tolist()
+                elif isinstance(processed_action, (list, tuple)):
+                    action_list = list(processed_action)
+                else:
+                    raise TypeError(f"Unexpected action type: {type(processed_action)}")
+                
+                response = {"action": action_list}
                 await websocket.send(json.dumps(response))
 
             except Exception as e:
-                print(f"处理错误: {e}")
-                await websocket.send(json.dumps({"error": str(e)}))
+                import traceback
+                error_msg = f"处理错误: {e}\n{traceback.format_exc()}"
+                print(error_msg)
+                try:
+                    await websocket.send(json.dumps({"error": str(e)}))
+                except Exception as send_error:
+                    print(f"发送错误消息失败: {send_error}")
 
     except websockets.exceptions.ConnectionClosed:
         print(f"客户端断开: {websocket.remote_address}")
+    except Exception as e:
+        import traceback
+        print(f"连接处理错误: {e}\n{traceback.format_exc()}")
 
 
 async def main():

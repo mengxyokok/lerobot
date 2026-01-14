@@ -27,6 +27,7 @@ from lerobot.processor.converters import create_transition
 from lerobot.processor.core import TransitionKey
 from lerobot.configs.train import TrainRLServerPipelineConfig
 from lerobot.policies.factory import make_policy
+from lerobot.policies.sac.configuration_sac import SACConfig  # 导入以注册策略类型
 from lerobot.processor import (
     AddBatchDimensionProcessorStep,
     AddTeleopActionAsComplimentaryDataStep,

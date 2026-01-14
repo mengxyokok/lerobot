@@ -6,6 +6,7 @@ import json
 import numpy as np
 from lerobot.configs.train import TrainRLServerPipelineConfig
 from lerobot.rl.gym_manipulator import make_robot_env
+from lerobot.policies.sac.configuration_sac import SACConfig  # 导入以注册策略类型
 import websockets
 
 
