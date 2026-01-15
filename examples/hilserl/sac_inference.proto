@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sac_inference;
+
+// SAC推理服务
+service SACInference {
+  // 发送观察，返回动作
+  rpc Predict(ObservationRequest) returns (ActionResponse);
+}
+
+// 观察请求（使用MessagePack序列化的bytes）
+message ObservationRequest {
+  bytes observation_data = 1;  // MessagePack序列化的观察数据
+}
+
+// 动作响应（使用MessagePack序列化的bytes）
+message ActionResponse {
+  bytes action_data = 1;  // MessagePack序列化的动作数据
+  string error = 2;  // 错误信息（如果有）
+}
+
