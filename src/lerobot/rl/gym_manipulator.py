@@ -316,13 +316,20 @@ def make_robot_env(cfg: HILSerlRobotEnvConfig) -> tuple[gym.Env, Any]:
         use_gripper = cfg.processor.gripper.use_gripper if cfg.processor.gripper is not None else True
         gripper_penalty = cfg.processor.gripper.gripper_penalty if cfg.processor.gripper is not None else 0.0
 
+        # Build gym_kwargs - only add random_block_position for PandaPickCube environments
+        gym_kwargs = {
+            "image_obs": True,
+            "render_mode": "human",
+            "use_gripper": use_gripper,
+            "gripper_penalty": gripper_penalty,
+        }
+        # Only PandaPickCube environments support random_block_position parameter
+        if "PandaPickCube" in cfg.task:
+            gym_kwargs["random_block_position"] = False
+
         env = gym.make(
             f"gym_hil/{cfg.task}",
-            image_obs=True,
-            render_mode="human",
-            random_block_position=False,
-            use_gripper=use_gripper,
-            gripper_penalty=gripper_penalty,
+            **gym_kwargs
         )
 
         return env, None
