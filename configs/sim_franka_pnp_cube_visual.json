@@ -1,0 +1,26 @@
+{
+    "env": {
+        "name": "gym_hil",
+        "task": "PandaArrangeBoxesMouse-v0",
+        "fps": 10,
+        "robot": null,
+        "teleop": null,
+        "processor": {
+            "control_mode": "input",
+            "gripper": {
+                "use_gripper": true,
+                "gripper_penalty": -0.02
+            }
+        }
+    },
+    "dataset": {
+        "repo_id": "mengxiaoye/franka_sim_pick_lift",
+        "root": null,
+        "task": "PandaArrangeBoxesMouse-v0",
+        "num_episodes_to_record": 30,
+        "replay_episode": 0,
+        "push_to_hub": false
+    },
+    "mode": "null",
+    "device": "cuda"
+}
