@@ -567,7 +567,7 @@ def control_loop(
     env: gym.Env,
     env_processor: DataProcessorPipeline[EnvTransition, EnvTransition],
     action_processor: DataProcessorPipeline[EnvTransition, EnvTransition],
-    teleop_device: Teleoperator,
+    teleop_device: Teleoperator | None,
     cfg: GymManipulatorConfig,
 ) -> None:
     """Main control loop for robot environment interaction.
@@ -605,7 +605,26 @@ def control_loop(
 
     dataset = None
     if cfg.mode == "record":
-        action_features = teleop_device.action_features
+        # 对于 gym_hil 环境，teleop_device 可能是 None，需要从环境获取 action_features
+        if teleop_device is not None:
+            action_features = teleop_device.action_features
+        else:
+            # 从环境的 action_space 推断 action_features
+            action_shape = env.action_space.shape
+            action_dtype = str(env.action_space.dtype)
+            # 根据是否有 gripper 来确定 action 维度
+            if use_gripper and len(action_shape) > 0 and action_shape[0] >= 4:
+                action_features = {
+                    "dtype": action_dtype,
+                    "shape": action_shape,
+                    "names": {"delta_x": 0, "delta_y": 1, "delta_z": 2, "gripper": 3},
+                }
+            else:
+                action_features = {
+                    "dtype": action_dtype,
+                    "shape": action_shape,
+                    "names": {"delta_x": 0, "delta_y": 1, "delta_z": 2} if len(action_shape) > 0 and action_shape[0] >= 3 else None,
+                }
         features = {
             ACTION: action_features,
             REWARD: {"dtype": "float32", "shape": (1,), "names": None},

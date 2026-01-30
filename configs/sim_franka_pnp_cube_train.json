@@ -19,7 +19,7 @@
         "disable_artifact": true
     },
     "dataset": {
-        "repo_id": "mengxiaoye/franka_sim_pick_lift_5",
+        "repo_id": "mengxiaoye/franka_sim_pnp_cube_123",
         "use_imagenet_stats": false
     },
     "env": {
