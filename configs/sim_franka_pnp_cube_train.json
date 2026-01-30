@@ -25,6 +25,7 @@
     "env": {
         "name": "gym_hil",
         "task": "PandaArrangeBoxesMouse-v0",
+        "type": "gym_manipulator",
         "fps": 10,
         "robot": null,
         "teleop": null,

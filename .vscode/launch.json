@@ -34,7 +34,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--config_path",
-                "configs/sim_franka_pnp_cube_visual.json"
+                "configs/sim_franka_pnp_cube_train.json"
             ]
         }
     ]
