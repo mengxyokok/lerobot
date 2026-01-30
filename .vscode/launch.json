@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gym_manipulator",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "lerobot.rl.gym_manipulator",
+            "console": "integratedTerminal",
+            "args": [
+                "--config_path",
+                "configs/sim_franka_pnp_cube_record.json"
+            ]
+        },
+        {
+            "name": "actor",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "lerobot.rl.actor",
+            "console": "integratedTerminal",
+            "args": [
+                "--config_path",
+                "configs/sim_franka_pnp_cube_train.json"
+            ]
+        },
+        {
+            "name": "learner",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "lerobot.rl.learner",
+            "console": "integratedTerminal",
+            "args": [
+                "--config_path",
+                "configs/sim_franka_pnp_cube_visual.json"
+            ]
+        }
+    ]
+}
