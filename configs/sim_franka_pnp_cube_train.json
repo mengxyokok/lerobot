@@ -23,7 +23,6 @@
         "use_imagenet_stats": false
     },
     "env": {
-        "type": "gym_manipulator",
         "name": "gym_hil",
         "task": "PandaArrangeBoxesMouse-v0",
         "fps": 10,

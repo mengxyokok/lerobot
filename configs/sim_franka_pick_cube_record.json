@@ -1,7 +1,6 @@
 {
     "env": {
         "name": "gym_hil",
-        "type": "gym_manipulator",
         "task": "PandaPickCubeKeyboard-v0",
         "fps": 10,
         "robot": null,

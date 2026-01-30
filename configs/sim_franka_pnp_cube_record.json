@@ -1,17 +1,16 @@
 {
     "env": {
         "name": "gym_hil",
-        "type": "gym_manipulator",
         "task": "PandaArrangeBoxesMouse-v0",
         "fps": 10,
         "robot": null,
         "teleop": null
     },
     "dataset": {
-        "repo_id": "mengxiaoye/franka_sim_pick_lift",
+        "repo_id": "mengxiaoye/franka_sim_pnp_cube_123",
         "root": null,
         "task": "PandaArrangeBoxesMouse-v0",
-        "num_episodes_to_record": 30,
+        "num_episodes_to_record": 10,
         "replay_episode": 0,
         "push_to_hub": false
     },
