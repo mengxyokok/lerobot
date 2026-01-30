@@ -329,7 +329,10 @@ def act_with_policy(
 
         complementary_info = {
             "discrete_penalty": torch.tensor(
-                [new_transition[TransitionKey.COMPLEMENTARY_DATA].get("discrete_penalty", 0.0)]
+                [new_transition["complementary_data"].get("discrete_penalty", 0.0)]
+            ),
+            "is_intervention": torch.tensor(
+                [new_transition["complementary_data"].get( "is_intervention", False)]
             ),
         }
         # Create transition for learner (convert to old format)

@@ -115,7 +115,7 @@ def reset_follower_position(robot_arm: Robot, target_position: np.ndarray) -> No
     for pose in trajectory:
         action_dict = dict(zip(current_position_dict, pose, strict=False))
         robot_arm.bus.sync_write("Goal_Position", action_dict)
-        precise_sleep(0.015)
+        # precise_sleep(0.015)
 
 
 class RobotEnv(gym.Env):
@@ -239,7 +239,7 @@ class RobotEnv(gym.Env):
             reset_follower_position(self.robot, np.array(self.reset_pose))
             log_say("Reset the environment done.", play_sounds=True)
 
-        precise_sleep(max(self.reset_time_s - (time.perf_counter() - start_time), 0.0))
+        # precise_sleep(max(self.reset_time_s - (time.perf_counter() - start_time), 0.0))
 
         super().reset(seed=seed, options=options)
 
@@ -316,6 +316,10 @@ def make_robot_env(cfg: HILSerlRobotEnvConfig) -> tuple[gym.Env, Any]:
         # Extract gripper settings with defaults
         use_gripper = cfg.processor.gripper.use_gripper if cfg.processor.gripper is not None else True
         gripper_penalty = cfg.processor.gripper.gripper_penalty if cfg.processor.gripper is not None else 0.0
+        if "PandaArrangeBoxesMouse" in cfg.task:
+            max_episode_steps = 1200
+        else:
+            max_episode_steps = 100
 
         env = gym.make(
             f"gym_hil/{cfg.task}",
@@ -323,6 +327,7 @@ def make_robot_env(cfg: HILSerlRobotEnvConfig) -> tuple[gym.Env, Any]:
             render_mode="human",
             use_gripper=use_gripper,
             gripper_penalty=gripper_penalty,
+            max_episode_steps=max_episode_steps,
         )
 
         return env, None
@@ -714,7 +719,7 @@ def control_loop(
             transition = env_processor(transition)
 
         # Maintain fps timing
-        precise_sleep(max(dt - (time.perf_counter() - step_start_time), 0.0))
+        # precise_sleep(max(dt - (time.perf_counter() - step_start_time), 0.0))
 
     if dataset is not None and cfg.dataset.push_to_hub:
         logging.info("Pushing dataset to hub")
@@ -746,7 +751,7 @@ def replay_trajectory(
         )
         transition = action_processor(transition)
         env.step(transition[TransitionKey.ACTION])
-        precise_sleep(max(1 / cfg.env.fps - (time.perf_counter() - start_time), 0.0))
+        # precise_sleep(max(1 / cfg.env.fps - (time.perf_counter() - start_time), 0.0))
 
 
 @parser.wrap()
